@@ -337,14 +337,14 @@
                 return this;
             };
 
-            createElements (index = this.getDestination()[0], separator = "\t") {
+            createElements (yearIndex = this.getDestination()[0], separator = "\t") {
                 const titles = [null, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                     rewards = ["Date", "Np amount", "Np", "Item", "Lv", "Hp", "Atk", "Def", "Spd", "Total"],
                     total = { amount: 0, np: 0, item: 0, lv: 0, hp: 0, atk: 0, def: 0, spd: 0, count: 0 },
                     frequency = { lv: {}, hp: {}, atk: {}, def: {}, spd: {} },
                     page = this.createNode("", "", "page");
-                if (!this.lookup[index]) index = this.setDestination(0, 0).getDestination()[0];
-                const year = this.lookup[index];
+                if (!this.lookup[yearIndex]) yearIndex = this.setDestination(0, 0).getDestination()[0];
+                const year = this.lookup[yearIndex];
                 if (!year) {
                     page.classList.add("zero");
                     page.innerText = "You don't have any entry, finish a Kitchen Quest first!";
@@ -411,22 +411,22 @@
             };
 
             getDestination () {
-                let year = sessionStorage.getItem("Current Year"),
-                    month = sessionStorage.getItem("Current Month");
-                if (year === null) {
-                    year = "0";
-                    sessionStorage.setItem("Current Year", year);
+                let yearIndex = sessionStorage.getItem("Current Year"),
+                    monthIndex = sessionStorage.getItem("Current Month");
+                if (yearIndex === null) {
+                    yearIndex = "0";
+                    sessionStorage.setItem("Current Year", yearIndex);
                 };
-                if (month === null) {
-                    month = "0";
-                    sessionStorage.setItem("Current Month", month);
+                if (monthIndex === null) {
+                    monthIndex = "0";
+                    sessionStorage.setItem("Current Month", monthIndex);
                 };
-                return [+ year, + month];
+                return [+ yearIndex, + monthIndex];
             };
 
-            setDestination (year, month) {
-                sessionStorage.setItem("Current Year", year);
-                sessionStorage.setItem("Current Month", month);
+            setDestination (yearIndex, monthIndex) {
+                sessionStorage.setItem("Current Year", yearIndex);
+                sessionStorage.setItem("Current Month", monthIndex);
                 return this;
             };
 
@@ -438,17 +438,17 @@
                         current = this.getDestination();
                     if (picker && picker.hasChildNodes()) picker.textContent = "";
                     if (action && action.hasChildNodes()) action.textContent = "";
-                    this.lookup.forEach((page, pageindex) => {
+                    this.lookup.forEach((yearLabel, yearIndex) => {
                         const year = this.createNode("", "year"),
-                            pick = this.createNode(page, current[0] !== pageindex ? "pick" : "pick active", "", undefined, "button"),
+                            pick = this.createNode(yearLabel, current[0] !== yearIndex ? "pick" : "pick active", "", undefined, "button"),
                             months = this.createNode("", "month");
                         pick.addEventListener("click", () => {
-                            this.setDestination(pageindex, 0).activePick(pageindex, 0).renderElements(pageindex);
+                            this.setDestination(yearIndex, 0).activePick(yearIndex, 0).renderElements(yearIndex);
                         });
-                        Object.keys(this.pages[page]).forEach((section, sectionindex) => {
-                            const pick = this.createNode(titles[section], current[1] !== sectionindex ? "pick" : "pick active", "", undefined, "button");
+                        Object.keys(this.pages[yearLabel]).forEach((monthLabel, monthIndex) => {
+                            const pick = this.createNode(titles[monthLabel], current[1] !== monthIndex ? "pick" : "pick active", "", undefined, "button");
                             pick.addEventListener("click", () => {
-                                this.setDestination(pageindex, sectionindex).activePick(pageindex, sectionindex);
+                                this.setDestination(yearIndex, monthIndex).activePick(yearIndex, monthIndex);
                             });
                             months.append(pick);
                         });
@@ -466,77 +466,79 @@
                 return this;
             };
 
-            activePick (pageindex, sectionindex) {
+            activePick (yearIndex, monthIndex) {
                 const buttons = document.querySelectorAll("#picker .buttons .pick"),
-                    year = document.querySelectorAll("#picker .buttons .year")[pageindex];
+                    year = document.querySelectorAll("#picker .buttons .year")[yearIndex];
                 buttons.forEach(button => {
                     button.classList.remove("active");
                 });
                 year.querySelector(".pick").classList.add("active");
-                year.querySelectorAll(".month .pick")[sectionindex].classList.add("active");
+                year.querySelectorAll(".month .pick")[monthIndex].classList.add("active");
                 return this;
             };
 
-            renderElements (index = this.getDestination()[0]) {
+            renderElements (yearIndex = this.getDestination()[0]) {
                 const space = document.querySelector("#report"),
-                    page = this.lookup[index],
                     quote = document.querySelector("header nav .quote .report");
                 space.textContent = "";
-                if (page) {
-                    if (this.elements.hasOwnProperty(page)) {
-                        space.append(this.elements[page]);
-                    } else {
-                        this.createElements(index);
-                        space.append(this.elements[this.lookup[index]]);
-                    };
+
+                if (yearLabel = hasElements(yearIndex)) {
+                    space.append(this.elements[yearLabel]);
                     quote.innerHTML = `and ${ stopTimer(start) }s to prepare report for you.`;
                 } else {
                     space.append(this.elements.zero);
                     quote.innerHTML = `and failed to prepare report for you.`;
                 };
-
-                quote.addEventListener("click", async () => {
-                    picker = await window.showOpenFilePicker();
-                    const file = picker.getFile();
-                    console.log(file);
-                });
-
-
                 return this;
             };
 
             moveTo () {
                 const year = document.querySelector("#page .year"),
-                    month = this.getDestination()[1];
-                if (year) {
-                    year.scrollTop = month === 0 ? 0 : year.querySelectorAll(".month")[month].offsetTop;
+                    monthIndex = this.getDestination()[1],
+                    month = year.querySelectorAll(".month")[monthIndex];
+                if (year && month) {
+                    year.scrollTop = monthIndex === 0 ? 0 : year.querySelectorAll(".month")[monthIndex].offsetTop;
                 } else {
-                    console.error("Call renderElements method first before using moveTo.");
+                    console.error("You don't have entries about this month!");
                 };
                 return this;
             };
 
             copyFrom () {
-                const [year, month] = this.getDestination(),
-                    page = this.lookup[year];
-                if (page) {
-                    if (this.elements.hasOwnProperty(page)) {
-                        const section = this.elements[page].querySelectorAll(".month"),
-                            data = section[month].textContent;
-                        window.navigator.clipboard.writeText(data);
-                    }
+                const [yearIndex, monthIndex] = this.getDestination();
+
+                if (yearLabel = hasElements(yearIndex)) {
+                    const section = this.elements[yearLabel].querySelectorAll(".month"),
+                        data = section[monthIndex].textContent;
+                    window.navigator.clipboard.writeText(data);
                 };
                 return this;
             };
 
-            exportCSV (index = this.getDestination()[0]) {
-                const page = this.lookup[index],
-                    data = this.elements[page].textContent.replaceAll("\t", ","),
-                    file = new Blob([data, data], { type: "text/csv" }),
-                    url = URL.createObjectURL(file),
-                    anchor = this.createNode("Download", "csv", "", undefined, "a");
-                anchor.href = url;
-                anchor.download = `kitchen-quest-logbook-report-${ page }.csv`;
+            exportCSV (yearIndex = this.getDestination()[0]) {
+                if (yearLabel = hasElements(yearIndex)) {
+                    const data = this.elements[yearLabel].textContent.replaceAll("\t", ","),
+                        file = new Blob([data], { type: "text/csv" }),
+                        url = URL.createObjectURL(file),
+                        anchor = this.createNode("Download", "csv", "", undefined, "a");
+                    anchor.href = url;
+                    anchor.download = `kitchen-quest-logbook-report-${ page }.csv`;
+                };
+                return this;
+            };
+
+            hasElements (yearIndex) {
+                const yearLabel = this.lookup[yearIndex];
+
+                if (yearLabel) {
+                    if (!this.elements.hasOwnProperty(yearLabel)) {
+                        this.createElements(yearIndex);
+                    };
+                    return yearLabel;
+                } else {
+                    console.error(`You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`);
+                    return false;
+                };
             };
 
             sumThis (batch) {
