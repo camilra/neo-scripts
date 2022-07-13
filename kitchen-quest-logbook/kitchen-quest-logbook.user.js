@@ -480,9 +480,11 @@
             renderElements (yearIndex = this.getDestination()[0]) {
                 const space = document.querySelector("#report"),
                     quote = document.querySelector("header nav .quote .report");
+                let yearLabel;
+
                 space.textContent = "";
 
-                if (yearLabel = hasElements(yearIndex)) {
+                if (yearLabel = this.hasElements(yearIndex)) {
                     space.append(this.elements[yearLabel]);
                     quote.innerHTML = `and ${ stopTimer(start) }s to prepare report for you.`;
                 } else {
@@ -506,8 +508,9 @@
 
             copyFrom () {
                 const [yearIndex, monthIndex] = this.getDestination();
+                let yearLabel;
 
-                if (yearLabel = hasElements(yearIndex)) {
+                if (yearLabel = this.hasElements(yearIndex)) {
                     const section = this.elements[yearLabel].querySelectorAll(".month"),
                         data = section[monthIndex].textContent;
                     window.navigator.clipboard.writeText(data);
@@ -516,7 +519,9 @@
             };
 
             exportCSV (yearIndex = this.getDestination()[0]) {
-                if (yearLabel = hasElements(yearIndex)) {
+                let yearLabel;
+
+                if (yearLabel = this.hasElements(yearIndex)) {
                     const data = this.elements[yearLabel].textContent.replaceAll("\t", ","),
                         file = new Blob([data], { type: "text/csv" }),
                         url = URL.createObjectURL(file),
