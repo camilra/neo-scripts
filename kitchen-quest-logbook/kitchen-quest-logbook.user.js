@@ -16,6 +16,7 @@
     "use strict";
 
     const start = + new Date();
+
     var KQ;
     KQ = GM_getValue("Kitchen_Quest");
     if (!KQ) {
@@ -293,6 +294,7 @@
     {
         // class report
         class Report {
+            raw = [];
             lookup = [];
             pages = {};
             elements = {};
@@ -330,6 +332,7 @@
                     this.pages[KQ[i - 1].nst.year] = page;
                 };
                 Object.freeze(this.pages);
+                this.raw = KQ;
                 this.lookup = Object.keys(this.pages);
                 this.elements = {};
                 this.frequency = {};
@@ -525,11 +528,21 @@
                     const data = this.elements[yearLabel].textContent.replaceAll("\t", ","),
                         file = new Blob([data], { type: "text/csv" }),
                         url = URL.createObjectURL(file),
-                        anchor = this.createNode("Download", "csv", "", undefined, "a");
+                        anchor = this.createNode("Download CSV", "csv", "", undefined, "a");
                     anchor.href = url;
                     anchor.download = `kitchen-quest-logbook-report-${ page }.csv`;
                 };
                 return this;
+            };
+
+            exportJSON () {
+                const data = JSON.stringify({ Kitchen_Quest: this.raw }),
+                    file = new Blob([data], { type: "application/json" }),
+                    url = URL.createObjectURL(file),
+                    anchor = this.createNode("Download JSON", "json", "", undefined, "a");
+                anchor.href = url;
+                anchor.download = `kitchen-quest-logbook-entries.json`;
+                document.body.append(anchor);
             };
 
             hasElements (yearIndex) {
@@ -1264,7 +1277,7 @@
             createReportStyle();
 
             window.setTimeout(() => {
-                new Report().createPages(KQ).createElements().renderElements().moveTo();
+                new Report().createPages(KQ).createElements().renderElements().moveTo().exportJSON();
             }, 0);
 
             var tags = document.querySelectorAll("header nav div .tag"),
