@@ -48,7 +48,7 @@
 
             getDate () {
                 const [date, month, year] = new Date().toLocaleDateString("en-GB", { timeZone: "America/Los_Angeles" }).split("/");
-                return { "year": + year, "month": + month, "date": + date };
+                return { year: + year, month: + month, date: + date };
             };
         };
 
@@ -56,103 +56,103 @@
         function createKitchenStyle () {
             const style = document.createElement("style");
             style.innerText = `
-            #icon{
-                display: inline-block;
-                background-image: url(https://images.neopets.com/themes/h5/basic/images/v3/transferlog-icon.svg);
-                background-position: center;
-                background-size: 105%;
-                width: 30px;
-                height: 30px;
-                position: relative;
-                cursor: pointer;
-            }
-            #summary{
-                display: flex;
-                flex-wrap: wrap;
-                visibility: hidden;
-                opacity: 0;
-                background-color: #feecc7;
-                font-family: "MuseoSansRounded700", 'Arial', sans-serif;
-                width: 255px;
-                height: auto;
-                padding: 10px;
-                border: solid 3px #633e06;
-                border-radius: 10px;
-                position: absolute;
-                top: 34px;
-                pointer-events: none;
-                transform-origin: 50% 0;
-                transform: scaleY(0.1);
-                transition: 0.25s;
-            }
-            #summary.on{
-                visibility: visible;
-                opacity: 1;
-                transform: scaleY(1);
-                transition: 0.25s;
-            }
-            #summary > h1{
-                font-family: "Cafeteria", 'Arial Bold', sans-serif;
-                font-size: 1.2rem;
-                width: 100%;
-                height: fit-content;
-                margin: 0;
-            }
-            #summary > h2{
-                font-size: 1rem;
-                font-weight: bold;
-                width: 100%;
-                height: fit-content;
-                margin: 0;
-            }
-            #summary > .icon{
-                background-size: 25px 25px;
-                width: 25px;
-                height: 25px;
-            }
-            #summary > .data{
-                display: flex;
-                align-items: center;
-                width: calc(100% - 35px);
-                padding-left: 10px;
-            }
-            #summary > .data a{
-                color: #5d2fc9;
-                text-decoration: none;
-                pointer-events: all;
-            }
-            #success{
-                visibility: hidden;
-                opacity: 0;
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                height: 35px;
-                margin: 10px 0;
-                cursor: default;
-            }
-            #success.done{
-                visibility: visible;
-                opacity: 1;
-            }
-            #success .wrapper{
-                display: flex;
-                height: 100%;
-            }
-            #success .wrapper .tick{
-                background-size: 35px 35px;
-                width: 35px;
-                height: 35px;
-            }
-            #success .wrapper .text{
-                display: flex;
-                align-items: center;
-                font-family: "MuseoSansRounded700", 'Arial', sans-serif;
-                color: #057300;
-                width: max-content;
-                padding-left: 10px;
-            }
-        `;
+                #icon{
+                    display: inline-block;
+                    background-image: url(https://images.neopets.com/themes/h5/basic/images/v3/transferlog-icon.svg);
+                    background-position: center;
+                    background-size: 105%;
+                    width: 30px;
+                    height: 30px;
+                    position: relative;
+                    cursor: pointer;
+                }
+                #summary{
+                    display: flex;
+                    flex-wrap: wrap;
+                    visibility: hidden;
+                    opacity: 0;
+                    background-color: #feecc7;
+                    font-family: "MuseoSansRounded700", 'Arial', sans-serif;
+                    width: 255px;
+                    height: auto;
+                    padding: 10px;
+                    border: solid 3px #633e06;
+                    border-radius: 10px;
+                    position: absolute;
+                    top: 34px;
+                    pointer-events: none;
+                    transform-origin: 50% 0;
+                    transform: scaleY(0.1);
+                    transition: 0.25s;
+                }
+                #summary.on{
+                    visibility: visible;
+                    opacity: 1;
+                    transform: scaleY(1);
+                    transition: 0.25s;
+                }
+                #summary > h1{
+                    font-family: "Cafeteria", 'Arial Bold', sans-serif;
+                    font-size: 1.2rem;
+                    width: 100%;
+                    height: fit-content;
+                    margin: 0;
+                }
+                #summary > h2{
+                    font-size: 1rem;
+                    font-weight: bold;
+                    width: 100%;
+                    height: fit-content;
+                    margin: 0;
+                }
+                #summary > .icon{
+                    background-size: 25px 25px;
+                    width: 25px;
+                    height: 25px;
+                }
+                #summary > .data{
+                    display: flex;
+                    align-items: center;
+                    width: calc(100% - 35px);
+                    padding-left: 10px;
+                }
+                #summary > .data a{
+                    color: #5d2fc9;
+                    text-decoration: none;
+                    pointer-events: all;
+                }
+                #success{
+                    visibility: hidden;
+                    opacity: 0;
+                    display: flex;
+                    justify-content: center;
+                    width: 100%;
+                    height: 35px;
+                    margin: 10px 0;
+                    cursor: default;
+                }
+                #success.done{
+                    visibility: visible;
+                    opacity: 1;
+                }
+                #success .wrapper{
+                    display: flex;
+                    height: 100%;
+                }
+                #success .wrapper .tick{
+                    background-size: 35px 35px;
+                    width: 35px;
+                    height: 35px;
+                }
+                #success .wrapper .text{
+                    display: flex;
+                    align-items: center;
+                    font-family: "MuseoSansRounded700", 'Arial', sans-serif;
+                    color: #057300;
+                    width: max-content;
+                    padding-left: 10px;
+                }
+            `;
             document.body.appendChild(style);
         };
 
@@ -160,10 +160,10 @@
         function createKitchenScript () {
             const script = document.createElement("script");
             script.innerText = `
-            function showSummary(){
-                document.querySelector("#summary").classList.toggle("on");
-            };
-        `;
+                function showSummary(){
+                    document.querySelector("#summary").classList.toggle("on");
+                };
+            `;
             document.body.appendChild(script);
         };
 
@@ -242,13 +242,13 @@
                             const reward = record[0].addedNodes[10],
                                 original = reward.innerText;
                             reward.outerHTML += `
-                            <div id="success">
-                                <div class="wrapper">
-                                    <div class="tick" style="background-image: url(https://images.neopets.com/neggfest/y23/np/negg-found.svg)"></div>
-                                    <div class="text">Your entry has been successfully added!</div>
-                                </div>
-                            <div>
-                        `;
+                                <div id="success">
+                                    <div class="wrapper">
+                                        <div class="tick" style="background-image: url(https://images.neopets.com/neggfest/y23/np/negg-found.svg)"></div>
+                                        <div class="text">Your entry has been successfully added!</div>
+                                    </div>
+                                <div>
+                            `;
                             rewardLog(original);
                         };
                     });
@@ -257,30 +257,30 @@
                     const [active, { amount, item, lv, hp, atk, def, spd }] = sumTotal(KQ),
                         nav = document.querySelector(".navsub-left__2020");
                     nav.innerHTML += `
-                    <div id="icon" onclick="showSummary()">
-                        <div id="summary">
-                            <h1>Kitchen Quest reward in total:</h1>
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/np-icon.svg)"></div>
-                            <div class="data">${ amount } NP</div>
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/hunger-icon.png)"></div>
-                            <div class="data">${ item } Items</div>
-                            <h1>Active pet ${ active } has gained:</h1>
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/level-icon.png)"></div>
-                            <div class="data">${ lv } Level</div>
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/health-icon.png)"></div>
-                            <div class="data">${ hp } Hit Points</div>
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/equip-icon.png)"></div>
-                            <div class="data">${ atk } Attack</div>
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/customise-icon.svg)"></div>
-                            <div class="data">${ def } Defence</div>
-                            <div class="icon" style="background-image: url(https://cdn.discordapp.com/emojis/594698006067019826.png)"></div>
-                            <div class="data">${ spd } Speed</div>
-                            <h2>For full report please visit petpage</h2>
-                            <div class="icon" style="background-image: url(https://pets.neopets.com/cp/3n9jz9vg/1/6.png)"></div>
-                            <div class="data"><a href="/~Camilra" target="_blank">Camilra</a></div>
+                        <div id="icon" onclick="showSummary()">
+                            <div id="summary">
+                                <h1>Kitchen Quest reward in total:</h1>
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/np-icon.svg)"></div>
+                                <div class="data">${ amount } NP</div>
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/hunger-icon.png)"></div>
+                                <div class="data">${ item } Items</div>
+                                <h1>Active pet ${ active } has gained:</h1>
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/level-icon.png)"></div>
+                                <div class="data">${ lv } Level</div>
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/health-icon.png)"></div>
+                                <div class="data">${ hp } Hit Points</div>
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/equip-icon.png)"></div>
+                                <div class="data">${ atk } Attack</div>
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/basic/images/customise-icon.svg)"></div>
+                                <div class="data">${ def } Defence</div>
+                                <div class="icon" style="background-image: url(https://cdn.discordapp.com/emojis/594698006067019826.png)"></div>
+                                <div class="data">${ spd } Speed</div>
+                                <h2>For full report please visit petpage</h2>
+                                <div class="icon" style="background-image: url(https://pets.neopets.com/cp/3n9jz9vg/1/6.png)"></div>
+                                <div class="data"><a href="/~Camilra" target="_blank">Camilra</a></div>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
                 };
             };
         };
@@ -295,6 +295,7 @@
         // class report
         class Report {
             raw = [];
+            temporary = [];
             lookup = [];
             pages = {};
             elements = {};
@@ -481,18 +482,15 @@
             };
 
             renderElements (yearIndex = this.getDestination()[0]) {
-                const space = document.querySelector("#report"),
-                    quote = document.querySelector("header nav .quote .report");
+                const space = document.querySelector("#report");
                 let yearLabel;
 
                 space.textContent = "";
 
                 if (yearLabel = this.hasElements(yearIndex)) {
                     space.append(this.elements[yearLabel]);
-                    quote.innerHTML = `and ${ stopTimer(start) }s to prepare report for you.`;
                 } else {
                     space.append(this.elements.zero);
-                    quote.innerHTML = `and failed to prepare report for you.`;
                 };
                 return this;
             };
@@ -542,7 +540,6 @@
                     anchor = this.createNode("Download JSON", "json", "", undefined, "a");
                 anchor.href = url;
                 anchor.download = `kitchen-quest-logbook-entries.json`;
-                document.body.append(anchor);
             };
 
             hasElements (yearIndex) {
@@ -601,99 +598,96 @@
             title.innerText = "Neopets - Kitchen Quest Logbook";
 
             document.body.innerHTML = `
-            <header>
-                <div class="background">
-                    <div class="hegelob"></div>
-                    <div class="hegelob"></div>
-                    <div class="hegelob"></div>
-                    <div class="hegelob"></div>
-                    <div class="hegelob"></div>
-                </div>
-                <nav>
-                    <div class="camilra">
-                        <a tabindex="0" class="tag" href="/~Camilra">
-                            <div class="icon" style="background-image: url(https://pets.neopets.com/cp/7zssdrnt/1/1.png)"></div>
-                        </a>
+                <header>
+                    <div class="background">
+                        <div class="hegelob"></div>
+                        <div class="hegelob"></div>
+                        <div class="hegelob"></div>
+                        <div class="hegelob"></div>
+                        <div class="hegelob"></div>
                     </div>
-                    <div class="quote">
-                        <span class="page"></span>
-                        <span class="report"></span>
-                    </div>
-                    <div class="kitchen">
-                        <a tabindex="0" class="tag" href="island/kitchen.phtml" target="_self">
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/signout-icon.png)"></div>
-                            <div class="text">Back to Kitchen</div>
-                        </a>
-                    </div>
-                    <div class="export">
-                        <a tabindex="-1" class="tag toggle disable">
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/quickstock-icon.png)"></div>
-                            <div class="text">Export</div>
-                        </a>
-                    </div>
-                    <div class="picker">
-                        <a tabindex="0" class="tag toggle">
-                            <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/calendar-icon.png)"></div>
-                            <div class="text">Move To</div>
-                            <div class="arrow" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/dropdown-arrow.svg)"></div>
-                        </a>
-                        <div class="dropdown">
-                            <div id="picker">
-                                <div class="background">
-                                    <div class="hegelob"></div>
-                                </div>
-                                <div class="buttons"></div>
-                                <div class="action"></div>
+                    <nav>
+                        <div class="camilra">
+                            <a class="tag" href="/~Camilra" tabindex="0">
+                                <div class="icon" style="background-image: url(https://pets.neopets.com/cp/7zssdrnt/1/1.png)"></div>
+                            </a>
+                        </div>
+                        <div class="quote">
+                            <span class="page"></span>
+                            <span class="report"></span>
+                        </div>
+                        <div class="kitchen">
+                            <a class="tag" href="island/kitchen.phtml" target="_self" tabindex="0">
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/signout-icon.png)"></div>
+                                <div class="text">Back to Kitchen</div>
+                            </a>
+                        </div>
+                        <div class="export">
+                            <a class="tag toggle" href="#export" tabindex="0">
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/quickstock-icon.png)"></div>
+                                <div class="text">Export</div>
+                            </a>
+                            <div class="dropdown">
+                                <div id="export"></div>
                             </div>
                         </div>
+                        <div class="picker">
+                            <a class="tag toggle" href="#picker" tabindex="0">
+                                <div class="icon" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/calendar-icon.png)"></div>
+                                <div class="text">Move To</div>
+                                <div class="arrow" style="background-image: url(https://images.neopets.com/themes/h5/newyears/images/dropdown-arrow.svg)"></div>
+                            </a>
+                            <div class="dropdown">
+                                <div id="picker">
+                                    <div class="background">
+                                        <div class="hegelob"></div>
+                                    </div>
+                                    <div class="buttons"></div>
+                                    <div class="action"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                </header>
+                <main>
+                    <div id="report"></div>
+                </main>
+                <footer>
+                    <div class="pattern"></div>
+                    <div class="copyright">
+                        NEOPETS and all related indicia are trademarks of Neopets, Inc., © 1999-${ new Date().getUTCFullYear() }. ® denotes Reg. USPTO. All rights reserved.
                     </div>
-                </nav>
-            </header>
-            <main>
-                <div id="report"></div>
-            </main>
-            <footer>
-                <div class="pattern"></div>
-                <div class="copyright">
-                    NEOPETS and all related indicia are trademarks of Neopets, Inc., © 1999-${ new Date().getUTCFullYear() }. ® denotes Reg. USPTO. All rights reserved.
-                </div>
-                <div class="links">
-                    <div class="link">
-                        <a href="terms.phtml" target="_blank">Terms of Use</a>
+                    <div class="links">
+                        <div class="link">
+                            <a href="terms.phtml" target="_blank">Terms of Use</a>
+                        </div>
+                        <div class="link">
+                            <a href="privacy.phtml" target="_blank">Privacy Policy</a>
+                        </div>
+                        <div class="link">
+                            <a href="https://www.jumpstart.com/support/np-classic" target="_blank">Support</a>
+                        </div>
                     </div>
-                    <div class="link">
-                        <a href="privacy.phtml" target="_blank">Privacy Policy</a>
-                    </div>
-                    <div class="link">
-                        <a href="https://www.jumpstart.com/support/np-classic" target="_blank">Support</a>
-                    </div>
-                </div>
-            </footer>
-            <section class="overlay"></section>
-        `;
+                </footer>
+                <section class="overlay"></section>
+            `;
         };
 
         // report styling
         function createReportStyle () {
             const style = document.createElement("style");
             style.innerText += `
-                @font-face {
-                    font-family: "Cafeteria";
-                    src: url(https://images.neopets.com/js/fonts/cafeteria-black.ttf) format("truetype");
-                    src: url(https://images.neopets.com/js/fonts/cafeteria-black.otf) format("opentype");
-                    font-display: swap;
-                }
-
-                @font-face {
-                    font-family: "MuseoSansRounded700";
-                    font-style: normal;
-                    src: url(https://images.neopets.com/js/fonts/museosansrounded-700.woff) format("woff"), url(https://images.neopets.com/js/fonts/museosansrounded-700.ttf) format("truetype");
-                    font-display: swap;
+                :root, ::before, ::after {
+                    --header-height: 68px;
                 }
 
                 * {
                     box-sizing: border-box;
                     cursor: default;
+                }
+
+                ::before, ::after {
+                    display: block;
                 }
 
                 a {
@@ -703,6 +697,19 @@
 
                 a, a * {
                     cursor: pointer;
+                }
+
+                button {
+                    background-color: transparent;
+                    background-image: none;
+                    font-family: inherit;
+                    font-size: 100%;
+                    font-weight: inherit;
+                    text-transform: none;
+                    line-height: inherit;
+                    color: inherit;
+                    margin: 0;
+                    padding: 0;
                 }
 
                 :focus-visible {
@@ -715,6 +722,7 @@
                 }
 
                 html::-webkit-scrollbar {
+                    display: none;
                     width: 0;
                 }
 
@@ -727,7 +735,7 @@
                     font-family: "MuseoSansRounded700", "Arial Bold", sans-serif;
                     min-width: 1080px;
                     margin: 0;
-                    animation-name: fadein;
+                    animation-name: report;
                     animation-duration: 0.5s;
                     animation-fill-mode: forwards;
                 }
@@ -741,11 +749,10 @@
 
                 header {
                     background-image: linear-gradient(90deg, #fdcc01 0%, #ffff66 12.5%, #fdcc01 25%, #d4aa00 37.5%, #bb9601 50%, #d4aa00 62.5%, #fdcc01 75%, #ffff66 82.5%, #fdcc01 100%);
-                    /*background-image: linear-gradient(90deg, #bb9601 0%, #d4aa00 16.67%, #fdcc01 33.33%, #ffff66 50%, #fdcc01 66.67%, #d4aa00 83.33%, #bb9601 100%);*/
                     font-size: 17pt;
                     color: #fdcc01;
                     width: 100%;
-                    height: 68px;
+                    height: var(--header-height);
                     position: sticky;
                     top: 0;
                     z-index: 99;
@@ -899,7 +906,6 @@
                 }
 
                 header nav .quote::before {
-                    display: block;
                     content: "";
                     width: 0;
                     height: 0;
@@ -910,6 +916,39 @@
                     left: -6px;
                 }
 
+                header nav .export .tag.active + .dropdown {
+                    display: flex;
+                    animation-name: export;
+                    animation-duration: 0.5s;
+                    animation-fill-mode: forwards;
+                }
+
+                header nav .export .dropdown {
+                    visibility: hidden;
+                    opacity: 0;
+                    display: none;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: transparent;
+                    position: fixed;
+                    top: var(--header-height);
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    transform: translateY(-100%);
+                    z-index: 98;
+                }
+
+                header nav .picker .tag.active + .dropdown {
+                    visibility: visible;
+                    transform: translateX(0);
+                }
+
+                header nav .picker .tag.active + .dropdown #picker .buttons .year > button.active + .month {
+                    visibility: visible;
+                    opacity: 1;
+                }
+
                 header nav .picker .dropdown {
                     visibility: hidden;
                     font-size: 0.8rem;
@@ -917,7 +956,7 @@
                     padding-left: 15px;
                     border-left: solid 2px #3e3148;
                     position: fixed;
-                    top: 68px;
+                    top: var(--header-height);
                     bottom: 0;
                     right: 0;
                     transform: translateX(100%);
@@ -926,7 +965,6 @@
                 }
 
                 header nav .picker .dropdown::before {
-                    display: block;
                     content: "";
                     background-image: url(https://gist.githubusercontent.com/Camilra/89bb7b1767c6e82369ba5f01d88eddfa/raw/878e967ebd442e4e78c2057d3a2055658ec6a961/vine.svg), linear-gradient(0deg, #705a82 0%, #886d9f 16.67%, #b490d2 33.33%, #c099df 50%, #daaeff 66.67%, #f8e0ff 83.33%, #daaeff 100%);
                     background-repeat: no-repeat repeat;
@@ -938,16 +976,6 @@
                     left: 0;
                     right: 0;
                     z-index: -1;
-                }
-
-                header nav .picker .tag.active + .dropdown {
-                    visibility: visible;
-                    transform: translateX(0);
-                }
-
-                header nav .picker .tag.active + .dropdown #picker .buttons .year > button.active + .month {
-                    visibility: visible;
-                    opacity: 1;
                 }
 
                 #picker {
@@ -1023,6 +1051,13 @@
                     align-items: center;
                 }
 
+                #export {
+                    background-color: #000;
+                    width: 600px;
+                    height: 500px;
+                    padding: 30px;
+                }
+
                 main {
                     min-height: calc(100vh - 158px);
                     padding: 50px 0;
@@ -1052,7 +1087,7 @@
                     position: relative;
                     left: 0;
                     transition: 0.4s;
-                    animation-name: fadein;
+                    animation-name: report;
                     animation-duration: 0.5s;
                     animation-fill-mode: forwards;
                 }
@@ -1216,13 +1251,41 @@
                     display: block;
                 }
 
-                @keyframes fadein {
+                @font-face {
+                    font-family: "Cafeteria";
+                    src: url(https://images.neopets.com/js/fonts/cafeteria-black.ttf) format("truetype");
+                    src: url(https://images.neopets.com/js/fonts/cafeteria-black.otf) format("opentype");
+                    font-display: swap;
+                }
+
+                @font-face {
+                    font-family: "MuseoSansRounded700";
+                    font-style: normal;
+                    src: url(https://images.neopets.com/js/fonts/museosansrounded-700.woff) format("woff"), url(https://images.neopets.com/js/fonts/museosansrounded-700.ttf) format("truetype");
+                    font-display: swap;
+                }
+
+                @keyframes report {
                     0% {
                         opacity: 0;
                     }
 
                     100% {
                         opacity: 1;
+                    }
+                }
+
+                @keyframes export {
+                    0% {
+                        visibility: hidden;
+                        opacity: 0;
+                        transform: translateY(-100%);
+                    }
+
+                    100% {
+                        visibility: visible;
+                        opacity: 1;
+                        transform: translateY(0);
                     }
                 }
             `;
@@ -1234,11 +1297,6 @@
             tags.forEach(tag => {
                 tag.addEventListener("click", () => {
                     if (tag.classList.contains("toggle")) {
-                        toggleDropdown(tag);
-                    };
-                });
-                tag.addEventListener("keydown", event => {
-                    if (event.key === "Enter" && tag.classList.contains("toggle")) {
                         toggleDropdown(tag);
                     };
                 });
@@ -1276,16 +1334,17 @@
             createReportLayout();
             createReportStyle();
 
-            window.setTimeout(() => {
-                new Report().createPages(KQ).createElements().renderElements().moveTo().exportJSON();
-            }, 0);
-
+            const quote = document.querySelectorAll("header nav .quote span");
             var tags = document.querySelectorAll("header nav div .tag"),
                 overlay = document.querySelector("section.overlay");
-            const quote = document.querySelector("header nav .quote .page");
+
+            window.setTimeout(() => {
+                const report = new Report().createPages(KQ).createElements().renderElements().moveTo();
+                quote[1].innerHTML = report.lookup.length ? `and ${ stopTimer(start) }s to prepare report for you.` : `and failed to prepare report for you.`;
+            }, 0);
 
             navToggle(tags, overlay);
-            quote.innerHTML = `I took ${ stopTimer(start) }s to prepare the page&nbsp;`;
+            quote[0].innerHTML = `I took ${ stopTimer(start) }s to prepare the page&nbsp;`;
         };
     };
     /**************************************** Report ****************************************/
