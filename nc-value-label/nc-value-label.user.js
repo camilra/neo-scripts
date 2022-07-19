@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         NC Value Label
-// @namespace    https://github.com/Camilra/neo-scripts/tree/master/nc-value-label
+// @namespace    https://github.com/Camilra/neo-scripts/tree/main/nc-value-label
 // @description  Label NC items with Waka & Owls value.
 // @icon         http://images.neopets.com/themes/h5/basic/images/nc-icon.svg
 // @version      1.0

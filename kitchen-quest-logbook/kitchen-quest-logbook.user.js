@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Kitchen Quest Logbook
-// @namespace    https://github.com/Camilra/neo-scripts/tree/master/kitchen-quest-logbook
+// @namespace    https://github.com/Camilra/neo-scripts/tree/main/kitchen-quest-logbook
 // @description  Record your Kitchen Quest reward.
 // @icon         https://images.neopets.com/items/toy_kitchenquest_flotsam.gif
 // @version      1.1
@@ -524,6 +524,8 @@
             createExport () {
                 if (this.lookup.length) {
 
+                } else {
+                    console.error(`You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`);
                 };
                 return this;
             };
