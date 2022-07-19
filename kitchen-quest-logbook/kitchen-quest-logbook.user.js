@@ -1372,18 +1372,19 @@
 
         //change theme
         function changeTheme () {
-            const html = document.documentElement;
+            const html = document.documentElement,
+                attribute = "data-theme";
             let theme = window.localStorage.getItem("Theme");
             if (!theme) theme = "system", window.localStorage.setItem("Theme", theme);
             switch (theme) {
                 case "light":
-                    html.setAttribute("data-theme", "light");
+                    html.setAttribute(attribute, "light");
                     break;
                 case "dark":
-                    html.setAttribute("data-theme", "dark");
+                    html.setAttribute(attribute, "dark");
                     break;
                 default:
-                    window.matchMedia("(prefers-color-scheme: light)").matches ? html.setAttribute("data-theme", "light") : html.setAttribute("data-theme", "dark");
+                    html.setAttribute(attribute, window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
             };
         };
 
@@ -1411,6 +1412,7 @@
             navToggle(tags, overlay);
             quote[0].innerHTML = `I took ${ stopTimer(start) }s to prepare the page&nbsp;`;
         };
-    };
+    }
+
     /**************************************** Report ****************************************/
 })();
