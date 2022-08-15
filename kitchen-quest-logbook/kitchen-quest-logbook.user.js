@@ -724,9 +724,8 @@
                 border: 0;
             }
 
-            :focus-visible {
-                border-radius: 4px;
-                outline: solid 2px #fdcc01;
+            html {
+                background-color: var(--html-background-color);
             }
 
             html::-webkit-scrollbar {
@@ -734,36 +733,38 @@
                 width: 0;
             }
 
-            html[data-theme=light] {
-                background-color: #362831;
-            }
-
             html[data-theme=light] :root, html[data-theme=light] body {
-                --html-background-color: #362831;
-                --body-background-image: url(https://i.imgur.com/MxW83Qb.jpg);
-                --body-color: #fdcc01;
-                --header-background-image: linear-gradient(90deg, #fdcc01 0%, #ffff66 12.5%, #fdcc01 25%, #d4aa00 37.5%, #bb9601 50%, #d4aa00 62.5%, #fdcc01 75%, #ffff66 82.5%, #fdcc01 100%);
-                --header-decoration-background-image: linear-gradient(45deg, #100a12 0%, #1d1420 20%, #3a2941 40%, #1d1420 60%, #160e17 80%, #100a12 100%);
-                --header-arrow-background-image: url(https://images.neopets.com/themes/h5/newyears/images/dropdown-arrow.svg);
+                --html-background-color: #f1a1a4;
+                --body-background-image: url(https://i.imgur.com/6xxj63I.jpg);
+                --body-color: #3C0309;
+                --ribbon: linear-gradient(90deg, #b68df7 0%, #ab6de8 12.5%, #b68df7 25%, #b791f8 37.5%, #cdbbf9 50%, #b791f8 62.5%, #b68df7 75%, #ab6de8 82.5%, #b68df7 100%);
+                --header-decoration-background-image: linear-gradient(45deg, #ee9fa4 0%, #f9bdb3 20%, #fde9d0 40%, #f8d8cd 60%, #f9bdb3 80%, #ee9fa4 100%);
+                --header-arrow-background-image: url(https://images.neopets.com/themes/h5/valentines/images/dropdown-arrow.svg);
                 --header-camilra-icon: url(https://pets.neopets.com/cp/7zssdrnt/1/1.png);
+                --header-picker-background-image: linear-gradient(0deg, #ee9fa4 0%, #fde9d0 100%);
+                --footer-decoration-background-image: url(https://i.imgur.com/yRM4jJN.jpg);
             }
 
             html[data-theme=light] .hegelob {
                 display: none;
             }
 
-            html[data-theme=dark] {
-                background-color: #362831;
-            }
-
             html[data-theme=dark] :root, html[data-theme=dark] body {
                 --html-background-color: #362831;
-                --body-background-image: url(https://i.imgur.com/MxW83Qb.jpg);
+                --body-background-image: url(https://i.imgur.com/bWAVtvj.jpg);
                 --body-color: #fdcc01;
-                --header-background-image: linear-gradient(90deg, #fdcc01 0%, #ffff66 12.5%, #fdcc01 25%, #d4aa00 37.5%, #bb9601 50%, #d4aa00 62.5%, #fdcc01 75%, #ffff66 82.5%, #fdcc01 100%);
+                --ribbon: linear-gradient(90deg, #fdcc01 0%, #ffff66 12.5%, #fdcc01 25%, #d4aa00 37.5%, #bb9601 50%, #d4aa00 62.5%, #fdcc01 75%, #ffff66 82.5%, #fdcc01 100%);
                 --header-decoration-background-image: linear-gradient(45deg, #100a12 0%, #1d1420 20%, #3a2941 40%, #1d1420 60%, #160e17 80%, #100a12 100%);
                 --header-arrow-background-image: url(https://images.neopets.com/themes/h5/newyears/images/dropdown-arrow.svg);
                 --header-camilra-icon: url(https://pets.neopets.com/cp/7zssdrnt/1/1.png);
+                --header-picker-background-image: linear-gradient(0deg, #100a12 0%, #3a2941 100%);
+                --footer-decoration-background-image: url(https://i.imgur.com/YnA0kqn.jpg);
+            }
+
+            :focus-visible {
+                border-radius: 4px;
+                outline-style: solid;
+                outline-width: 2px;
             }
 
             body {
@@ -789,7 +790,7 @@
             }
 
             header {
-                background-image: var(--header-background-image);
+                background-image: var(--ribbon);
                 font-size: 17pt;
                 width: 100%;
                 height: var(--header-height);
@@ -1035,7 +1036,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: space-around;
-                background-image: linear-gradient(0deg, #100a12 0%, #3a2941 100%);
+                background-image: var(--header-picker-background-image);
                 width: 100%;
                 height: 100%;
                 position: relative;
@@ -1232,7 +1233,7 @@
             }
 
             footer {
-                background-image: linear-gradient(90deg, #fdcc01 0%, #ffff66 12.5%, #fdcc01 25%, #d4aa00 37.5%, #bb9601 50%, #d4aa00 62.5%, #fdcc01 75%, #ffff66 82.5%, #fdcc01 100%);
+                background-image: var(--ribbon);
                 text-align: center;
                 width: 100%;
                 min-width: 1080px;
@@ -1242,7 +1243,7 @@
 
             footer .pattern {
                 background-color: #2a2017;
-                background-image: url(https://i.imgur.com/YnA0kqn.jpg);
+                background-image: var(--footer-decoration-background-image);
                 background-repeat: no-repeat;
                 background-size: cover;
                 background-position: bottom center;
@@ -1332,9 +1333,6 @@
                     transform: translateY(100vh);
                 }
             }
-
-            /*# sourceMappingURL=kq.css.map */
-
             `;
             document.body.appendChild(style);
         };
@@ -1354,7 +1352,7 @@
         };
 
         //toggle dropdown
-        function toggleDropdown (tag,) {
+        function toggleDropdown (tag) {
             if (!tag.classList.contains("active")) {
                 cancelDropdown();
             };
