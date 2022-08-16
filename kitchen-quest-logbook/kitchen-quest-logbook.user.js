@@ -337,8 +337,7 @@
                 this.lookup = Object.keys(this.pages);
                 this.elements = {};
                 this.frequency = {};
-                this.createPicker();
-                this.createExport();
+                this.createPicker().createExport();
                 return this;
             };
 
@@ -369,7 +368,8 @@
                             odds = this.createNode("", "row", "", 0),
                             sub = { amount: 0, np: 0, item: 0, lv: 0, hp: 0, atk: 0, def: 0, spd: 0, count: 0 };
                         for (let i = 0; i < rewards.length; i++) {
-                            const reward = this.createNode(rewards[i], "column");
+                            const classes = i ? Object.keys(total)[i - 1] : "",
+                                reward = this.createNode(rewards[i], `column ${ classes }`);
                             i < rewards.length - 1 ? column.append(reward, separator) : column.append(reward);
                         };
                         head.append(title, "\n", column, "\n");
@@ -387,11 +387,11 @@
                         };
                         overall.append(this.createNode("Month Total"));
                         odds.append(this.createNode("Odds"));
-                        odds.append(separator, this.createNode("-"));
+                        odds.append(separator, this.createNode("-", "amount"));
                         for (const props in sub) {
                             total[props] += sub[props];
-                            overall.append(separator, this.createNode(sub[props]));
-                            if (props !== "amount") odds.append(separator, this.createNode(`${ Math.round(sub[props] / sub.count * 10000) / 100 }%`));
+                            overall.append(separator, this.createNode(sub[props], props));
+                            if (props !== "amount") odds.append(separator, this.createNode(`${ Math.round(sub[props] / sub.count * 10000) / 100 }%`, props));
                         };
                         foot.append(overall, "\n", odds, "\n");
                         section.append(foot);
@@ -401,16 +401,17 @@
                         odds = this.createNode("", "row", "", 0);
                     overall.append(this.createNode("Year Total"));
                     odds.append(this.createNode("Odds"));
-                    odds.append(separator, this.createNode("-"));
+                    odds.append(separator, this.createNode("-", "amount"));
                     for (const props in total) {
-                        overall.append(separator, this.createNode(total[props]));
-                        if (props !== "amount") odds.append(separator, this.createNode(`${ Math.round(total[props] / total.count * 10000) / 100 }%`));
+                        overall.append(separator, this.createNode(total[props], props));
+                        if (props !== "amount") odds.append(separator, this.createNode(`${ Math.round(total[props] / total.count * 10000) / 100 }%`, props));
                     };
                     foot.append(overall, "\n", odds, "\n");
                     article.append(foot);
                     page.append(article);
                     this.elements[year] = page;
                     this.frequency[year] = frequency;
+                    console.log(frequency);
                 };
                 return this;
             };
@@ -418,9 +419,7 @@
             renderElements (yearIndex = this.getDestination()[0]) {
                 const space = document.querySelector("#report");
                 let yearLabel;
-
                 space.textContent = "";
-
                 if (yearLabel = this.hasElements(yearIndex)) {
                     space.append(this.elements[yearLabel]);
                 } else {
@@ -512,7 +511,6 @@
             pickerCopyFrom () {
                 const [yearIndex, monthIndex] = this.getDestination();
                 let yearLabel;
-
                 if (yearLabel = this.hasElements(yearIndex)) {
                     const section = this.elements[yearLabel].querySelectorAll(".month"),
                         data = section[monthIndex].textContent;
@@ -522,25 +520,68 @@
             };
 
             createExport () {
+                const exports = document.querySelector("#export"),
+                    form = exports.querySelector("form");
                 if (this.lookup.length) {
-
+                    if (form && form.hasChildNodes()) form.textContent = "";
+                    const container = this.createNode("", "options"),
+                        csv = this.createNode("", "csv", "", undefined, "fieldset"),
+                        json = this.createNode("", "json", "", undefined, "fieldset"),
+                        submit = this.createNode("Export", "", "", 0, "button");
+                    submit.type = "button";
+                    csv.append(this.createNode("Export CSV"));
+                    json.append(this.createNode("Export JSON"));
+                    container.append(csv, json);
+                    if (csv) {
+                        for (let i = 0; i < this.lookup.length; i++) {
+                            const label = this.createNode("", "", "", undefined, "label"),
+                                check = this.createNode("", "CSV", "", 0, "input"),
+                                text = this.createNode(`Year ${ this.lookup[i] }`);
+                            check.type = "checkbox";
+                            check.value = i;
+                            label.append(check, text);
+                            csv.append(label);
+                        };
+                    };
+                    if (json) {
+                        const label = this.createNode("", "", "", undefined, "label"),
+                            check = this.createNode("", "JSON", "", 0, "input"),
+                            text = this.createNode("Kitchen Quest Entries");
+                        check.type = "checkbox";
+                        label.append(check, text);
+                        json.append(label);
+                    };
+                    submit.addEventListener("click", () => {
+                        this.exportDownload(form);
+                    });
+                    form.append(container);
+                    form.append(submit);
                 } else {
+                    form.innerhtml = `<div class="zero">Nothing to export!</div>`;
                     console.error(`You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`);
+                };
+                return this;
+            };
+
+            exportDownload (form) {
+                const inputs = form.querySelectorAll("input[type=checkbox]");
+                for (let input of inputs) {
+                    if (input.checked) this[`export${ input.classList[0] }`](input.value);
                 };
                 return this;
             };
 
             exportCSV (yearIndex = this.getDestination()[0]) {
                 let yearLabel;
-
                 if (yearLabel = this.hasElements(yearIndex)) {
                     const data = this.elements[yearLabel].textContent.replaceAll("\t", ","),
                         file = new Blob([data], { type: "text/csv" }),
                         url = URL.createObjectURL(file),
-                        anchor = this.createNode("Download CSV", "csv", "", undefined, "a");
+                        anchor = this.createNode("", "csv", "", undefined, "a");
                     anchor.href = url;
-                    anchor.download = `kitchen-quest-logbook-report-${ page }.csv`;
-                };
+                    anchor.download = `kitchen-quest-logbook-report-${ yearLabel }.csv`;
+                    this.fireClick(anchor);
+                }
                 return this;
             };
 
@@ -548,14 +589,15 @@
                 const data = JSON.stringify({ Kitchen_Quest: this.raw }),
                     file = new Blob([data], { type: "application/json" }),
                     url = URL.createObjectURL(file),
-                    anchor = this.createNode("Download JSON", "json", "", undefined, "a");
+                    anchor = this.createNode("", "json", "", undefined, "a");
                 anchor.href = url;
                 anchor.download = `kitchen-quest-logbook-entries.json`;
+                this.fireClick(anchor);
+                return this;
             };
 
             hasElements (yearIndex) {
                 const yearLabel = this.lookup[yearIndex];
-
                 if (yearLabel) {
                     if (!this.elements.hasOwnProperty(yearLabel)) {
                         this.createElements(yearIndex);
@@ -565,6 +607,14 @@
                     console.error(`You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`);
                     return false;
                 };
+            };
+
+            fireClick (anchor) {
+                anchor.addEventListener("click", () => {});
+                anchor.dispatchEvent(new MouseEvent("click", {
+                    bubbles: true,
+                    cancelable: true
+                }));
             };
 
             sumThis (batch) {
@@ -592,7 +642,7 @@
                 const element = document.createElement(tag);
                 if (content === 0 || content) element.innerText = content;
                 if (classes) {
-                    classes.split(" ").forEach(type => {
+                    classes.trim().split(/[\s]+/g).forEach(type => {
                         element.classList.add(type);
                     });
                 };
@@ -639,7 +689,9 @@
                                 <div class="text">Export</div>
                             </button>
                             <div class="dropdown">
-                                <div id="export"></div>
+                                <div id="export">
+                                    <form></form>
+                                </div>
                             </div>
                         </div>
                         <div class="picker">
@@ -775,7 +827,6 @@
                 background-attachment: fixed;
                 font-family: "MuseoSansRounded700", "Arial Bold", sans-serif;
                 color: var(--body-color);
-                min-width: 1080px;
                 margin: 0;
                 animation-name: report;
                 animation-duration: 0.5s;
@@ -980,13 +1031,9 @@
                 justify-content: center;
                 align-items: center;
                 background-color: transparent;
-                position: fixed;
                 top: var(--header-height);
-                bottom: 0;
                 left: 0;
-                right: 0;
                 transform: translateY(-100vh);
-                z-index: 98;
             }
 
             header nav .picker .tag .icon {
@@ -1009,13 +1056,9 @@
                 width: 317px;
                 padding-left: 15px;
                 border-left: solid 2px #3e3148;
-                position: fixed;
                 top: var(--header-height);
-                bottom: 0;
-                right: 0;
                 transform: translateX(100%);
                 transition: 0.25s;
-                z-index: 98;
             }
 
             header nav .picker .dropdown::before {
@@ -1030,6 +1073,13 @@
                 left: 0;
                 right: 0;
                 z-index: -1;
+            }
+
+            header nav div .dropdown {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                z-index: 98;
             }
 
             #picker {
@@ -1099,10 +1149,51 @@
                 visibility: hidden;
                 opacity: 0;
                 display: none;
-                background-color: #000;
+                background-color: #fff;
+                font-family: "Cafeteria", "Arial Bold", sans-serif;
+                font-size: 1rem;
                 width: 600px;
                 height: 500px;
                 padding: 30px;
+            }
+
+            #export form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+
+            #export form > .zero {
+                font-size: 2rem;
+            }
+
+            #export form .options {
+                display: flex;
+                width: 100%;
+            }
+
+            #export form .options fieldset {
+                width: 50%;
+                padding: 0;
+                border: 0;
+                margin: 0;
+            }
+
+            #export form .options fieldset > div {
+                font-size: 1.5rem;
+            }
+
+            #export form .options fieldset label {
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
+
+            #export form .options fieldset label input {
+                margin: 0;
             }
 
             main {
@@ -1114,8 +1205,8 @@
             #report {
                 font-size: 0.9rem;
                 color: #2c0000;
-                width: 760px;
-                min-width: 760px;
+                width: 100%;
+                max-width: 760px;
                 padding: 50px 30px;
                 border-image-source: url(https://images.neopets.com/neggfest/y23/np/questlog-body.svg);
                 border-image-width: 70px 62px;
@@ -1129,7 +1220,7 @@
             #page {
                 opacity: 0;
                 display: flex;
-                width: fit-content;
+                width: 100%;
                 height: 550px;
                 position: relative;
                 left: 0;
@@ -1154,7 +1245,8 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                width: 700px;
+                width: 100%;
+                max-width: 700px;
                 padding: 0 20px;
                 overflow-x: hidden;
                 overflow-y: auto;
@@ -1177,7 +1269,7 @@
 
             #page .year .row {
                 display: grid;
-                grid-template-columns: 14% 14% 9% 9% 9% 9% 9% 9% 9% 9%;
+                grid-template-columns: 14fr 14fr 9fr 9fr 9fr 9fr 9fr 9fr 9fr 9fr;
             }
 
             #page .year .row div {
@@ -1333,11 +1425,37 @@
                     transform: translateY(100vh);
                 }
             }
+
+            @media screen and (max-width: 768px) {
+                #page .year .row {
+                    grid-template-columns: 14fr 14fr 10fr 10fr 10fr 10fr 10fr 10fr 10fr;
+                }
+
+                #page .year .row .count {
+                    display: none;
+                }
+            }
+
+            @media screen and (max-width: 520px) {
+                #page .year {
+                    padding: 0;
+                }
+
+                #page .year .row {
+                    grid-template-columns: 14fr 10fr 10fr 10fr 10fr 10fr 10fr 10fr;
+                }
+
+                #page .year .row .amount {
+                    display: none;
+                }
+            }
+
+            /*# sourceMappingURL=kq.css.map */
             `;
             document.body.appendChild(style);
         };
 
-        //nav toggle
+        // nav toggle
         function navToggle () {
             tags.forEach(tag => {
                 tag.addEventListener("click", () => {
@@ -1351,7 +1469,7 @@
             });
         };
 
-        //toggle dropdown
+        // toggle dropdown
         function toggleDropdown (tag) {
             if (!tag.classList.contains("active")) {
                 cancelDropdown();
@@ -1360,7 +1478,7 @@
             overlay.classList.toggle("active");
         };
 
-        //cancel dropdown
+        // cancel dropdown
         function cancelDropdown () {
             tags.forEach(tag => {
                 tag.classList.remove("active");
@@ -1368,7 +1486,7 @@
             overlay.classList.remove("active");
         };
 
-        //change theme
+        // change theme
         function changeTheme () {
             const html = document.documentElement,
                 attribute = "data-theme";
@@ -1392,7 +1510,7 @@
             return (end - start) / 1000;
         };
 
-        //on report page
+        // on report page
         if (window.location.href.toLowerCase().includes("/~camilra")) {
             createReportLayout();
             createReportStyle();
@@ -1407,7 +1525,7 @@
                 quote[1].innerHTML = report.lookup.length ? `and ${ stopTimer(start) }s to prepare report for you.` : `and failed to prepare report for you.`;
             }, 0);
 
-            navToggle(tags, overlay);
+            navToggle();
             quote[0].innerHTML = `I took ${ stopTimer(start) }s to prepare the page&nbsp;`;
         };
     }
