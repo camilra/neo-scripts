@@ -307,6 +307,14 @@
                 this.createElements = this.createElements;
                 this.pickerMoveTo = this.pickerMoveTo;
                 this.pickerCopyFrom = this.pickerCopyFrom;
+                this.errorMessage = {
+                    zeroEntries: `You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`,
+                    missingEntries: (text) => `You don't have entries of this ${ text }!`,
+                    copyFailed: `Failed to copy from report!\nDo not have permission to write to the clipboard.`
+                };
+                this.successMessage = {
+                    copySucceed: (year, month) => `Record of ${ month } ${ year } has been put into your clipboard.`
+                };
             };
 
             createPages (KQ = []) {
@@ -337,7 +345,82 @@
                 this.lookup = Object.keys(this.pages);
                 this.elements = {};
                 this.frequency = {};
-                this.createPicker().createExport();
+
+                const createPicker = () => {
+                    const titles = [null, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                        picker = document.querySelector("#picker .buttons"),
+                        action = document.querySelector("#picker .action"),
+                        current = this.getDestination();
+                    if (picker && picker.hasChildNodes()) picker.textContent = "";
+                    if (action && action.hasChildNodes()) action.textContent = "";
+                    this.lookup.forEach((yearLabel, yearIndex) => {
+                        const year = this.createNode("", "year"),
+                            pick = this.createNode(yearLabel, current[0] !== yearIndex ? "pick" : "pick active", "", undefined, "button"),
+                            months = this.createNode("", "month");
+                        pick.addEventListener("click", () => {
+                            this.setDestination(yearIndex, 0).pickerActive(yearIndex, 0).renderElements(yearIndex);
+                        });
+                        Object.keys(this.pages[yearLabel]).forEach((monthLabel, monthIndex) => {
+                            const pick = this.createNode(titles[monthLabel], current[1] !== monthIndex ? "pick" : "pick active", "", undefined, "button");
+                            pick.addEventListener("click", () => {
+                                this.setDestination(yearIndex, monthIndex).pickerActive(yearIndex, monthIndex).pickerMoveTo();
+                            });
+                            months.append(pick);
+                        });
+                        year.append(pick, months);
+                        picker.append(year);
+                        const copy = this.createNode("<div>Copy</div>", "copy", "", undefined, "button");
+                        copy.addEventListener("click", () => { this.pickerCopyFrom(); });
+                        action.append(copy);
+                    });
+                };
+
+                const createExport = () => {
+                    const exports = document.querySelector("#export"),
+                        form = exports.querySelector("form");
+                    if (form && form.hasChildNodes()) form.textContent = "";
+                    const container = this.createNode("", "options"),
+                        csv = this.createNode("", "csv", "", undefined, "fieldset"),
+                        json = this.createNode("", "json", "", undefined, "fieldset"),
+                        submit = this.createNode("Export", "", "", 0, "button");
+                    submit.type = "button";
+                    csv.append(this.createNode("Export CSV"));
+                    json.append(this.createNode("Export JSON"));
+                    container.append(csv, json);
+                    if (csv) {
+                        for (let i = 0; i < this.lookup.length; i++) {
+                            const label = this.createNode("", "", "", undefined, "label"),
+                                check = this.createNode("", "CSV", "", 0, "input"),
+                                text = this.createNode(`Year ${ this.lookup[i] }`);
+                            check.type = "checkbox";
+                            check.value = i;
+                            label.append(check, text);
+                            csv.append(label);
+                        };
+                    };
+                    if (json) {
+                        const label = this.createNode("", "", "", undefined, "label"),
+                            check = this.createNode("", "JSON", "", 0, "input"),
+                            text = this.createNode("Kitchen Quest Entries");
+                        check.type = "checkbox";
+                        label.append(check, text);
+                        json.append(label);
+                    };
+                    submit.addEventListener("click", () => {
+                        this.exportDownload(form);
+                    });
+                    form.append(container);
+                    form.append(submit);
+                    form.innerhtml = `<div class="zero">Nothing to export!</div>`;
+                };
+
+                if (this.lookup.length) {
+                    createPicker();
+                    createExport();
+                } else {
+                    this.displayError(this.errorMessage.zeroEntries);
+                }
+
                 return this;
             };
 
@@ -411,7 +494,6 @@
                     page.append(article);
                     this.elements[year] = page;
                     this.frequency[year] = frequency;
-                    console.log(frequency);
                 };
                 return this;
             };
@@ -448,40 +530,30 @@
                 return this;
             };
 
-            createPicker () {
-                if (this.lookup.length) {
-                    const titles = [null, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-                        picker = document.querySelector("#picker .buttons"),
-                        action = document.querySelector("#picker .action"),
-                        current = this.getDestination();
-                    if (picker && picker.hasChildNodes()) picker.textContent = "";
-                    if (action && action.hasChildNodes()) action.textContent = "";
-                    this.lookup.forEach((yearLabel, yearIndex) => {
-                        const year = this.createNode("", "year"),
-                            pick = this.createNode(yearLabel, current[0] !== yearIndex ? "pick" : "pick active", "", undefined, "button"),
-                            months = this.createNode("", "month");
-                        pick.addEventListener("click", () => {
-                            this.setDestination(yearIndex, 0).pickerActive(yearIndex, 0).renderElements(yearIndex);
-                        });
-                        Object.keys(this.pages[yearLabel]).forEach((monthLabel, monthIndex) => {
-                            const pick = this.createNode(titles[monthLabel], current[1] !== monthIndex ? "pick" : "pick active", "", undefined, "button");
-                            pick.addEventListener("click", () => {
-                                this.setDestination(yearIndex, monthIndex).pickerActive(yearIndex, monthIndex);
-                            });
-                            months.append(pick);
-                        });
-                        year.append(pick, months);
-                        picker.append(year);
-                        const move = this.createNode("Move", "move", "", undefined, "button"),
-                            copy = this.createNode("Copy", "copy", "", undefined, "button");
-                        move.addEventListener("click", () => { this.pickerMoveTo(); });
-                        copy.addEventListener("click", () => { this.pickerCopyFrom(); });
-                        action.append(move, copy);
-                    });
-                } else {
-                    console.error(`You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`);
-                }
+            observeScrollYear () {
+                const year = page.querySelector(".year"),
+                    months = year?.querySelectorAll(".month"),
+                    offsetTops = [...months].reduce((array, month) => {
+                        array.push(month.offsetTop);
+                        return array;
+                    }, []),
+                    options = {
+                        root: year,
+                        rootMargin: "100px 0px 0px 0px",
+                        threshold: 0.1
+                    },
+                    observer = new IntersectionObserver((record) => { this.observeChangeMonth(record, offsetTops); }, options);
+                console.log(offsetTops);
+                months.forEach(month => {
+                    observer.observe(month);
+                });
                 return this;
+            };
+
+            observeChangeMonth (record, offsetTops) {
+                for (const entry of record) {
+                    if (entry.isIntersecting) console.log(entry);
+                }
             };
 
             pickerActive (yearIndex, monthIndex) {
@@ -498,12 +570,11 @@
             pickerMoveTo () {
                 const year = document.querySelector("#page .year"),
                     monthIndex = this.getDestination()[1],
-                    month = year.querySelectorAll(".month")[monthIndex];
+                    month = year?.querySelectorAll(".month")[monthIndex];
                 if (year && month) {
                     year.scrollTop = monthIndex === 0 ? 0 : year.querySelectorAll(".month")[monthIndex].offsetTop;
-                    cancelDropdown();
                 } else {
-                    console.error("You don't have entries of this month!");
+                    this.displayError(this.errorMessage.missingEntries("month"));
                 };
                 return this;
             };
@@ -512,53 +583,22 @@
                 const [yearIndex, monthIndex] = this.getDestination();
                 let yearLabel;
                 if (yearLabel = this.hasElements(yearIndex)) {
-                    const section = this.elements[yearLabel].querySelectorAll(".month"),
-                        data = section[monthIndex].textContent;
-                    window.navigator.clipboard.writeText(data);
-                };
-                return this;
-            };
-
-            createExport () {
-                const exports = document.querySelector("#export"),
-                    form = exports.querySelector("form");
-                if (this.lookup.length) {
-                    if (form && form.hasChildNodes()) form.textContent = "";
-                    const container = this.createNode("", "options"),
-                        csv = this.createNode("", "csv", "", undefined, "fieldset"),
-                        json = this.createNode("", "json", "", undefined, "fieldset"),
-                        submit = this.createNode("Export", "", "", 0, "button");
-                    submit.type = "button";
-                    csv.append(this.createNode("Export CSV"));
-                    json.append(this.createNode("Export JSON"));
-                    container.append(csv, json);
-                    if (csv) {
-                        for (let i = 0; i < this.lookup.length; i++) {
-                            const label = this.createNode("", "", "", undefined, "label"),
-                                check = this.createNode("", "CSV", "", 0, "input"),
-                                text = this.createNode(`Year ${ this.lookup[i] }`);
-                            check.type = "checkbox";
-                            check.value = i;
-                            label.append(check, text);
-                            csv.append(label);
-                        };
+                    const months = this.elements[yearLabel].querySelectorAll(".month"),
+                        month = months[monthIndex];
+                    if (month) {
+                        const monthLabel = month.querySelector(".title").innerText,
+                            data = month.textContent,
+                            write = window.navigator.clipboard.writeText(data);
+                        write.then(resolve => {
+                            this.displaySuccess(this.successMessage.copySucceed(yearLabel, monthLabel));
+                        }).catch(error => {
+                            this.displayError(this.errorMessage.copyFailed);
+                        });
+                    } else {
+                        this.displayError(this.errorMessage.missingEntries("month"));
                     };
-                    if (json) {
-                        const label = this.createNode("", "", "", undefined, "label"),
-                            check = this.createNode("", "JSON", "", 0, "input"),
-                            text = this.createNode("Kitchen Quest Entries");
-                        check.type = "checkbox";
-                        label.append(check, text);
-                        json.append(label);
-                    };
-                    submit.addEventListener("click", () => {
-                        this.exportDownload(form);
-                    });
-                    form.append(container);
-                    form.append(submit);
                 } else {
-                    form.innerhtml = `<div class="zero">Nothing to export!</div>`;
-                    console.error(`You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`);
+                    this.displayError(this.errorMessage.missingEntries("year"));
                 };
                 return this;
             };
@@ -604,7 +644,7 @@
                     };
                     return yearLabel;
                 } else {
-                    console.error(`You don't have any antry, finish a Kitchen Quest first!\nhttps://www.neopets.com/island/kitchen.phtml`);
+                    this.displayError(this.errorMessage.zeroEntries);
                     return false;
                 };
             };
@@ -640,7 +680,7 @@
 
             createNode (content, classes = "", id = "", tabindex, tag = "div") {
                 const element = document.createElement(tag);
-                if (content === 0 || content) element.innerText = content;
+                if (content === 0 || content) element.innerHTML = content;
                 if (classes) {
                     classes.trim().split(/[\s]+/g).forEach(type => {
                         element.classList.add(type);
@@ -650,6 +690,13 @@
                 if (tabindex !== undefined) element.setAttribute("tabindex", tabindex);
                 return element;
             };
+
+            displaySuccess (message = "") {
+                console.log(message);
+            };
+            displayError (message = "") {
+                console.error(message);
+            };
         };
 
         // report layout
@@ -657,7 +704,6 @@
             let title = document.head.querySelector("title");
             if (!title) title = document.createElement("title"), document.head.append(title);
             title.innerText = "Neopets - Kitchen Quest Logbook";
-
             document.body.innerHTML = `
                 <header>
                     <div class="background">
@@ -669,9 +715,18 @@
                     </div>
                     <nav>
                         <div class="camilra">
-                            <button class="tag">
+                            <button class="tag toggle">
                                 <div class="icon"></div>
                             </button>
+                            <div class="dropdown">
+                                <div id="camilra">
+                                    <div class="background">
+                                        <div class="hegelob"></div>
+                                    </div>
+                                    <div class="buttons"></div>
+                                    <div class="action"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="quote">
                             <span class="page"></span>
@@ -793,7 +848,12 @@
                 --header-decoration-background-image: linear-gradient(45deg, #ee9fa4 0%, #f9bdb3 20%, #fde9d0 40%, #f8d8cd 60%, #f9bdb3 80%, #ee9fa4 100%);
                 --header-arrow-background-image: url(https://images.neopets.com/themes/h5/valentines/images/dropdown-arrow.svg);
                 --header-camilra-icon: url(https://pets.neopets.com/cp/7zssdrnt/1/1.png);
+                --header-dropdown-background: linear-gradient(0deg, #705a82 0%, #886d9f 16.67%, #b490d2 33.33%, #c099df 50%, #daaeff 66.67%, #f8e0ff 83.33%, #daaeff 100%);
+                --header-dropdown-pattern: url(https://gist.githubusercontent.com/Camilra/89bb7b1767c6e82369ba5f01d88eddfa/raw/878e967ebd442e4e78c2057d3a2055658ec6a961/vine.svg);
                 --header-picker-background-image: linear-gradient(0deg, #ee9fa4 0%, #fde9d0 100%);
+                --header-picker-action-button-background-color: #1D1420;
+                --header-picker-action-button-background-image: url(https://gist.githubusercontent.com/Camilra/32969190af24447eae8d29ebfe6418fc/raw/3045a6f9eb2ffe99eca95c2d09ab42bafab5525a/button-pattern-dark.svg);
+                --header-picker-action-button-image: url(https://gist.githubusercontent.com/Camilra/d3634393599cbfd1cd2a4129ad1c5658/raw/7024ad848808a5daa7ef0c8d1ff292fb2c01914b/button-dark.svg);
                 --footer-decoration-background-image: url(https://i.imgur.com/yRM4jJN.jpg);
             }
 
@@ -809,7 +869,12 @@
                 --header-decoration-background-image: linear-gradient(45deg, #100a12 0%, #1d1420 20%, #3a2941 40%, #1d1420 60%, #160e17 80%, #100a12 100%);
                 --header-arrow-background-image: url(https://images.neopets.com/themes/h5/newyears/images/dropdown-arrow.svg);
                 --header-camilra-icon: url(https://pets.neopets.com/cp/7zssdrnt/1/1.png);
+                --header-dropdown-background: linear-gradient(0deg, #705a82 0%, #886d9f 16.67%, #b490d2 33.33%, #c099df 50%, #daaeff 66.67%, #f8e0ff 83.33%, #daaeff 100%);
+                --header-dropdown-pattern: url(https://gist.githubusercontent.com/Camilra/89bb7b1767c6e82369ba5f01d88eddfa/raw/878e967ebd442e4e78c2057d3a2055658ec6a961/vine.svg);
                 --header-picker-background-image: linear-gradient(0deg, #100a12 0%, #3a2941 100%);
+                --header-picker-action-button-background-color: #1D1420;
+                --header-picker-action-button-background-image: url(https://gist.githubusercontent.com/Camilra/32969190af24447eae8d29ebfe6418fc/raw/3045a6f9eb2ffe99eca95c2d09ab42bafab5525a/button-pattern-dark.svg);
+                --header-picker-action-button-image: url(https://gist.githubusercontent.com/Camilra/d3634393599cbfd1cd2a4129ad1c5658/raw/7024ad848808a5daa7ef0c8d1ff292fb2c01914b/button-dark.svg);
                 --footer-decoration-background-image: url(https://i.imgur.com/YnA0kqn.jpg);
             }
 
@@ -984,6 +1049,40 @@
                 transform: unset;
             }
 
+            header nav .camilra .tag.active + .dropdown {
+                visibility: visible;
+                transform: translateX(0);
+            }
+
+            header nav .camilra .dropdown {
+                visibility: hidden;
+                font-size: 0.8rem;
+                width: 317px;
+                padding-right: 15px;
+                border-right: solid 2px #3e3148;
+                position: fixed;
+                top: var(--header-height);
+                bottom: 0;
+                left: 0;
+                transform: translateX(-100%);
+                transition: 0.25s;
+                z-index: 98;
+            }
+
+            header nav .camilra .dropdown::before {
+                content: "";
+                background-image: var(--header-dropdown-pattern), var(--header-dropdown-background);
+                background-repeat: no-repeat repeat;
+                background-size: 15px auto, auto;
+                background-position: right center, left center;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: -1;
+            }
+
             header nav .quote {
                 background-color: rgba(255, 255, 255, 0.8);
                 font-size: 0.9rem;
@@ -1031,9 +1130,13 @@
                 justify-content: center;
                 align-items: center;
                 background-color: transparent;
+                position: fixed;
                 top: var(--header-height);
+                bottom: 0;
                 left: 0;
+                right: 0;
                 transform: translateY(-100vh);
+                z-index: 98;
             }
 
             header nav .picker .tag .icon {
@@ -1056,17 +1159,21 @@
                 width: 317px;
                 padding-left: 15px;
                 border-left: solid 2px #3e3148;
+                position: fixed;
                 top: var(--header-height);
+                bottom: 0;
+                right: 0;
                 transform: translateX(100%);
                 transition: 0.25s;
+                z-index: 98;
             }
 
             header nav .picker .dropdown::before {
                 content: "";
-                background-image: url(https://gist.githubusercontent.com/Camilra/89bb7b1767c6e82369ba5f01d88eddfa/raw/878e967ebd442e4e78c2057d3a2055658ec6a961/vine.svg), linear-gradient(0deg, #705a82 0%, #886d9f 16.67%, #b490d2 33.33%, #c099df 50%, #daaeff 66.67%, #f8e0ff 83.33%, #daaeff 100%);
+                background-image: var(--header-dropdown-pattern), var(--header-dropdown-background);
                 background-repeat: no-repeat repeat;
                 background-size: 15px auto, auto;
-                background-position: bottom left;
+                background-position: left center, right center;
                 position: absolute;
                 top: 0;
                 bottom: 0;
@@ -1075,74 +1182,8 @@
                 z-index: -1;
             }
 
-            header nav div .dropdown {
-                position: fixed;
-                bottom: 0;
-                right: 0;
-                z-index: 98;
-            }
-
-            #picker {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-around;
-                background-image: var(--header-picker-background-image);
-                width: 100%;
-                height: 100%;
-                position: relative;
-                z-index: -1;
-            }
-
-            #picker > .background {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: -1;
-            }
-
-            #picker > .background .hegelob {
-                background-image: linear-gradient(0deg, #47324f 0%, #5e4369 100%);
-                transform: translateX(13px) scale(2) rotateZ(-25deg);
-            }
-
-            #picker .buttons {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 10px;
-                width: 90px;
-                padding: 10px;
-            }
-
-            #picker .buttons .year button {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: #f1c93c;
-                font-family: "MuseoSansRounded700", "Arial Bold", sans-serif;
-                color: #000;
-                padding: 5px;
-                border: solid 2px #f7a516;
-                border-radius: 5px;
-            }
-
-            #picker .buttons .year .month {
-                visibility: hidden;
-                opacity: 0;
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(6, 1fr);
-                gap: 15px;
-                width: 230px;
-                padding: 20px;
-                position: absolute;
-                top: 0;
-                right: 0;
-                transition: 0.25s;
+            #camilra > .background {
+                transform: scaleX(-1);
             }
 
             #export {
@@ -1194,6 +1235,116 @@
 
             #export form .options fieldset label input {
                 margin: 0;
+            }
+
+            #picker .buttons {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+                width: 90px;
+                padding: 10px;
+            }
+
+            #picker .buttons .year button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #f1c93c;
+                font-family: "MuseoSansRounded700", "Arial Bold", sans-serif;
+                color: #000;
+                padding: 5px;
+                border: solid 2px #f7a516;
+                border-radius: 5px;
+            }
+
+            #picker .buttons .year .month {
+                visibility: hidden;
+                opacity: 0;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+                gap: 15px;
+                width: 230px;
+                padding: 20px;
+                position: absolute;
+                top: 0;
+                right: 0;
+                transition: 0.25s;
+            }
+
+            #picker .action {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-family: "Cafeteria", "Arial Bold", sans-serif;
+            }
+
+            #picker .action button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 1.5rem;
+                width: 200px;
+                padding: 1rem;
+                border-image-source: var(--header-picker-action-button-image);
+                border-image-width: 50% auto;
+                border-image-slice: 50% fill;
+                border-image-outset: 0;
+                border-image-repeat: stretch;
+                border-radius: 3px;
+                outline: solid 1px #705A83;
+            }
+
+            #picker .action button:hover div {
+                transform: scale(1.1);
+            }
+
+            #picker .action button:active div {
+                transform: scale(1);
+            }
+
+            #picker .action button div {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #picker .action button div::before {
+                content: "";
+                background-image: var(--header-picker-action-button-background-image);
+                background-repeat: no-repeat;
+                background-size: 100%;
+                width: 1.875rem;
+                height: 1.5rem;
+                margin-right: 0.5rem;
+            }
+
+            #camilra, #picker {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                background-image: var(--header-picker-background-image);
+                width: 100%;
+                height: 100%;
+                position: relative;
+                z-index: -1;
+            }
+
+            #camilra > .background, #picker > .background {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: -1;
+            }
+
+            #camilra > .background .hegelob, #picker > .background .hegelob {
+                background-image: linear-gradient(0deg, #47324f 0%, #5e4369 100%);
+                transform: translateX(13px) scale(2) rotateZ(-25deg);
             }
 
             main {
@@ -1449,8 +1600,6 @@
                     display: none;
                 }
             }
-
-            /*# sourceMappingURL=kq.css.map */
             `;
             document.body.appendChild(style);
         };
@@ -1487,7 +1636,16 @@
         };
 
         // change theme
-        function changeTheme () {
+        function changeTheme (mode = "system") {
+            const html = document.documentElement,
+                attribute = "data-theme";
+            html.setAttribute(attribute, mode);
+            window.localStorage.setItem("Theme", mode);
+            applyTheme();
+        };
+
+        // apply theme
+        function applyTheme () {
             const html = document.documentElement,
                 attribute = "data-theme";
             let theme = window.localStorage.getItem("Theme");
@@ -1500,7 +1658,7 @@
                     html.setAttribute(attribute, "dark");
                     break;
                 default:
-                    html.setAttribute(attribute, window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+                    html.setAttribute(attribute, window.matchMedia("(prefers-color-scheme: light)").matches ? "dark" : "dark");
             };
         };
 
@@ -1514,21 +1672,21 @@
         if (window.location.href.toLowerCase().includes("/~camilra")) {
             createReportLayout();
             createReportStyle();
-            changeTheme();
+            applyTheme();
 
             const quote = document.querySelectorAll("header nav .quote span");
             var tags = document.querySelectorAll("header nav div .tag"),
                 overlay = document.querySelector("section.overlay");
 
             window.setTimeout(() => {
-                const report = new Report().createPages(KQ).createElements().renderElements().pickerMoveTo();
+                const report = new Report().createPages(KQ).createElements().renderElements().pickerMoveTo().observeScrollYear();
                 quote[1].innerHTML = report.lookup.length ? `and ${ stopTimer(start) }s to prepare report for you.` : `and failed to prepare report for you.`;
             }, 0);
 
             navToggle();
             quote[0].innerHTML = `I took ${ stopTimer(start) }s to prepare the page&nbsp;`;
         };
-    }
+    };
 
     /**************************************** Report ****************************************/
 })();
