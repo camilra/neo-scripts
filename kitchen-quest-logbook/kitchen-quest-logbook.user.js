@@ -356,7 +356,7 @@
                         current = this.getDestination();
                     if (picker && picker.hasChildNodes()) picker.textContent = "";
                     if (action && action.hasChildNodes()) action.textContent = "";
-                    select.addEventListener("change", event => {
+                    select.addEventListener("change", () => {
                         const yearIndex = select.value;
                         this.setDestination(yearIndex, 0)
                             .pickerActive(yearIndex, 0)
@@ -371,7 +371,6 @@
                         option.value = yearIndex;
                         select.append(option);
                         fieldset.append(field);
-
                         Object.keys(this.pages[yearLabel]).forEach((monthLabel, monthIndex) => {
                             const month = this.createNode(titles[monthLabel], current[1] !== monthIndex ? "pick" : "pick active", "", undefined, "button");
                             month.addEventListener("click", () => {
@@ -382,8 +381,6 @@
                             field.append(month);
                         });
                     });
-                    select.value = current[0];
-                    select.dispatchEvent(new Event("change"));
                 };
 
                 const createExport = () => {
@@ -541,33 +538,8 @@
                 return this;
             };
 
-            observeScrollYear () {
-                const year = page.querySelector(".year"),
-                    months = year?.querySelectorAll(".month"),
-                    offsetTops = [...months].reduce((array, month) => {
-                        array.push(month.offsetTop);
-                        return array;
-                    }, []),
-                    options = {
-                        root: year,
-                        rootMargin: "100px 0px 0px 0px",
-                        threshold: 0.1
-                    },
-                    observer = new IntersectionObserver((record) => { this.observeChangeMonth(record, offsetTops); }, options);
-                console.log(offsetTops);
-                months.forEach(month => {
-                    observer.observe(month);
-                });
-                return this;
-            };
-
-            observeChangeMonth (record, offsetTops) {
-                for (const entry of record) {
-                    if (entry.isIntersecting) console.log(entry);
-                }
-            };
-
             pickerActive (yearIndex, monthIndex) {
+                if ((yearIndex || monthIndex) === undefined) [yearIndex, monthIndex] = this.getDestination();
                 const years = document.querySelectorAll("#picker .buttons .year"),
                     buttons = document.querySelectorAll("#picker .buttons .year .pick");
                 years.forEach(year => {
@@ -1769,7 +1741,12 @@
                 overlay = document.querySelector("section.overlay");
 
             window.setTimeout(() => {
-                const report = new Report().createPages(KQ).createElements().renderElements().pickerMoveTo().observeScrollYear();
+                const report = new Report()
+                    .createPages(KQ)
+                    .createElements()
+                    .renderElements()
+                    .pickerActive()
+                    .pickerMoveTo();
                 quote[1].innerHTML = report.lookup.length ? `and ${ stopTimer(start) }s to prepare report for you.` : `and failed to prepare report for you.`;
             }, 0);
 
