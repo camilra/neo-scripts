@@ -3,12 +3,14 @@
 // @namespace    https://github.com/Camilra/neo-scripts/tree/main/nc-value-label
 // @description  Label NC items with Waka & Owls value.
 // @icon         http://images.neopets.com/themes/h5/basic/images/nc-icon.svg
-// @version      1.0
+// @version      1.1
 // @author       Camilra
 // @match        http*://www.neopets.com/~waka
 // @match        http*://www.neopets.com/~Waka
 // @match        http*://www.neopets.com/~owls
 // @match        http*://www.neopets.com/~Owls
+// @match        http*://www.neopets.com/~owlstwo
+// @match        http*://www.neopets.com/~OwlsTwo
 // @match        http*://www.neopets.com/inventory.phtml*
 // @match        http*://www.neopets.com/closet.phtml*
 // @match        http*://www.neopets.com/safetydeposit.phtml*
@@ -35,17 +37,22 @@
                 };
                 return prev;
             }, {});
-        GM_setValue("Waka", JSON.stringify(data));
+        GM_setValue("Waka", data);
         console.info(`Waka value of ${ Object.keys(data).length } NC items updated.`);
     };
 
     function getOwlsValue () {
-        const list = document.querySelectorAll("a[name=num] ~ li"),
+        var Owls = GM_getValue("Owls");
+        if (!Owls) {
+            Owls = {};
+            GM_setValue("Owls", Owls);
+        };
+
+        const list = document.querySelectorAll(".tooltip"),
             raw = [];
         list.forEach(element => {
             raw.push(element.innerText);
         });
-        raw.shift();
         const data = raw.reduce((prev, next) => {
             const [name, value] = next.split("~").map(string => string.trim().toLowerCase());
             if (value.includes("no trade")) {
@@ -59,7 +66,13 @@
             }
             return prev;
         }, {});
-        GM_setValue("Owls", JSON.stringify(data));
+
+        const merge = {
+            ...Owls,
+            ...data
+        };
+
+        GM_setValue("Owls", merge);
         console.info(`Owls value of ${ Object.keys(data).length } NC items updated.`);
     };
 
@@ -69,13 +82,11 @@
         Owls = GM_getValue("Owls");
         createStyle();
         if (Waka) {
-            Waka = JSON.parse(Waka);
             pasteLabel(Waka, "waka");
         } else {
             console.info("Please update NC items value at https://www.neopets.com/~Waka");
         };
         if (Owls) {
-            Owls = JSON.parse(Owls);
             pasteLabel(Owls, "owls");
         } else {
             console.info("Please update NC items value at https://www.neopets.com/~Owls");
