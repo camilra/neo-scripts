@@ -430,7 +430,6 @@
                 createPicker();
                 createExport();
             } else {
-                form.innerHTML = `<div class="zero">Nothing to export!</div>`;
                 this.displayError(this.errorMessage.zeroEntries);
             }
 
