@@ -3,7 +3,7 @@
 // @namespace    https://github.com/Camilra/neo-scripts/tree/main/kitchen-quest-logbook
 // @description  Record your Kitchen Quest reward.
 // @icon         https://images.neopets.com/items/toy_kitchenquest_flotsam.gif
-// @version      1.2
+// @version      1.2.1
 // @author       Camilra
 // @match        http*://www.neopets.com/island/kitchen.phtml*
 // @match        http*://www.neopets.com/~camilra
@@ -16,7 +16,7 @@
     "use strict";
 
     const start = + new Date();
-
+    console.log("test");
     var KQ;
     KQ = GM_getValue("Kitchen_Quest");
     if (!KQ) {
