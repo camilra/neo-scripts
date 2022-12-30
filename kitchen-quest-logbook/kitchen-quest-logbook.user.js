@@ -926,7 +926,10 @@
                 [year, month] = report.getDestination();
             let yearIndex;
 
-            if ((year || month) === 0) yearIndex = this.lookup[new Date().getFullYear()];
+            if ((year || month) === 0) {
+                let index = report.lookup.indexOf("" + new Date().getFullYear());
+                if (index >= 0) yearIndex = index;
+            };
 
             report.createElements(yearIndex)
                 .renderElements();
