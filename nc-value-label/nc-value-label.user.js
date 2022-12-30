@@ -101,12 +101,6 @@
             justify-content: center;
             align-items: center;
         }
-        .css-m6mpsq .owls > div{
-            font-size: 0.5rem;
-        }
-        .css-2v9k8q{
-            font-size: 0.7rem;
-        }
         .owls > div, .waka > div{
             font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
             font-size: 0.7rem;
