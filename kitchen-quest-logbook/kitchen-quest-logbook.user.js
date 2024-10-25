@@ -229,8 +229,8 @@
             createKitchenScript();
             const container = document.querySelector("#container__2020"),
                 observer = new MutationObserver(record => {
-                    if (record[0].addedNodes.length === 12) {
-                        const reward = record[0].addedNodes[10],
+                    if (record[0].addedNodes.length === 12 || record[0].addedNodes.length === 13) {
+                        const reward = record[0].addedNodes[record[0].addedNodes.length === 12 ? 10 : 11],
                             original = reward.innerText;
                         reward.outerHTML += `
                             <div id="success">
